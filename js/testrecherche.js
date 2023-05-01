@@ -26,7 +26,6 @@ function rechercheRecettes(recettes) {
       }
     }
 
-  
     if (!match) {
       for (let j = 0; j < recette.ingredients.length; j += 1) {
         const ingredient = recette.ingredients[j].ingredient.toLowerCase();
