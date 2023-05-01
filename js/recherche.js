@@ -1,4 +1,5 @@
 /* eslint-disable linebreak-style */
+/* eslint-disable no-shadow */
 /* eslint-disable no-undef */
 /* eslint-disable max-len */
 /* eslint-disable no-use-before-define */
@@ -47,7 +48,7 @@ function rechercheRecettes(recettes) {
   }
 }
 
-function createTag(tagText, tagClass, tagColor, recettes, recherche) {
+function createTag(tagText, tagClass, tagColor, recettes, rechercheRecettes) {
   // Sélectionner la boîte de tags
   const boxTags = document.querySelector(".boxTags");
   // Vérifier si le tag existe déjà
