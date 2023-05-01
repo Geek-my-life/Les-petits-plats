@@ -1,3 +1,6 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable quotes */
+// eslint-disable-next-line no-unused-vars
 class ListeIngredients {
   constructor(data, onclicked) {
     this.id = data.id;
@@ -10,7 +13,7 @@ class ListeIngredients {
     // Création d'un élément ul pour la liste d'ingrédients
     const ul = document.createElement("ul");
 
-    // Tri des ingrédients par ordre alphabétique en ignorant la casse et en enlevant les espaces inutiles
+    // Tri des ingrédients par ordre alphabétique en ignorant la casse et en enlevant les espaces
     const sortedIngredients = this.ingredients
       .map((ingredient) => ingredient.ingredient.toLowerCase().trim())
       .filter((value, index, self) => self.indexOf(value) === index)
@@ -26,7 +29,6 @@ class ListeIngredients {
       // Ajout de l'événement clic pour ajouter un tag
       li.addEventListener("click", () => {
         this.onclicked(ingredient);
-        
       });
     });
 

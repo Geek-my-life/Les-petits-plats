@@ -1,135 +1,76 @@
-async function rechercheRecettes2(recettes) {
-    const rechercheInput = document.querySelector(".rechercheInput").value.trim().toLowerCase();
-    const recettesFiltrees = recettes.filter((recette) =>
-      [recette.name, recette.description].some((texte) => texte.toLowerCase().includes(rechercheInput)) ||
-      recette.ingredients.some((ingredient) => ingredient.ingredient.toLowerCase().includes(rechercheInput))
-    );
-  
-    if (recettesFiltrees.length === 0) {
-      // Aucune recette ne correspond à la recherche
-      document.querySelector(".boxRecettes").innerHTML = `
-        <div class="messageErreurRecette"> 
-        Aucune recette ne correspond à votre critère… <br> vous pouvez chercher « tarte aux pommes », « poisson », etc. </div>`;
-  
-      document.querySelector(".boxRecettes").style.justifyContent = "center";
-      
-    } else {
-      // Afficher les recettes filtrées
-      document.querySelector(".boxRecettes").style.justifyContent = "space-between";
-  
-      recettesData(recettesFiltrees);
-      ingredientsData(recettesFiltrees);
-      appareilsData(recettesFiltrees);
-      ustencilesData(recettesFiltrees);
-  
-      const ingredients = [...new Set(recettesFiltrees.flatMap((recette) => recette.ingredients.map((ingredient) => ingredient.ingredient.toLowerCase())))].sort();
-      ajouterTags(".choixIngredients", ingredients);
-  
-      const appareils = [...new Set(recettesFiltrees.flatMap((recette) => recette.appliance.toLowerCase()))].sort();
-      ajouterTags(".choixAppareils", appareils);
-  
-      const ustensiles = [...new Set(recettesFiltrees.flatMap((recette) => recette.ustensils.map((ustensile) => ustensile.toLowerCase())))].sort();
-      ajouterTags(".choixUstenciles", ustensiles);
-    }
-  }
-  async function rechercheRecettes(recettes) {
-    const rechercheInput = document.querySelector(".rechercheInput").value.trim().toLowerCase();
-    const recettesFiltrees = [];
-  
-    if (!rechercheInput || rechercheInput.length < 3) {
-      // Afficher toutes les recettes si la recherche est vide ou trop courte
-      for (let i = 0; i < recettes.length; i++) {
-        recettesFiltrees.push(recettes[i]);
+/* eslint-disable linebreak-style */
+/* eslint-disable no-undef */
+/* eslint-disable quotes */
+/* eslint-disable no-unused-vars */
+function rechercheRecettes(recettes) {
+  // Récupérer la valeur de l'input de recherche et la formater en minuscules
+  const rechercheInput = document
+    .querySelector(".rechercheInput")
+    .value.trim()
+    .toLowerCase();
+
+  // Initialiser un tableau pour stocker les recettes filtrées
+  const recettesFiltrees = [];
+
+  // Parcourir les recettes
+  for (let i = 0; i < recettes.length; i += 1) {
+    const recette = recettes[i];
+    let match = false;
+
+    // Vérifier si la recette correspond à la recherche
+    for (let j = 0; j < [recette.name, recette.description].length; j += 1) {
+      const texte = [recette.name, recette.description][j].toLowerCase();
+      if (texte.includes(rechercheInput)) {
+        match = true;
+        break;
       }
-    } else {
-      // Filtrer les recettes qui correspondent à la recherche
-      for (let i = 0; i < recettes.length; i++) {
-        const recette = recettes[i];
-        if (
-          recette.name.toLowerCase().includes(rechercheInput) ||
-          recette.ingredients.some((ingredient) =>
-            ingredient.ingredient.toLowerCase().includes(rechercheInput)
-          ) ||
-          recette.description.toLowerCase().includes(rechercheInput)
-        ) {
-          recettesFiltrees.push(recette);
+    }
+
+    if (!match) {
+      for (let j = 0; j < recette.ingredients.length; j += 1) {
+        const ingredient = recette.ingredients[j].ingredient.toLowerCase();
+        if (ingredient.includes(rechercheInput)) {
+          match = true;
+          break;
         }
       }
     }
-  
-    if (recettesFiltrees.length === 0) {
-      // Aucune recette ne correspond à la recherche
-      document.querySelector(".boxRecettes").innerHTML = `
-        <div class="messageErreurRecette"> 
-        Aucune recette ne correspond à votre critère… <br> vous pouvez chercher « tarte aux pommes », « poisson », etc. </div>`;
-  
-      document.querySelector(".boxRecettes").style.justifyContent = "center";
-      
-    } else {
-      // Afficher les recettes filtrées
-      document.querySelector(".boxRecettes").style.justifyContent = "space-between";
-  
-      recettesData(recettesFiltrees);
-      ingredientsData(recettesFiltrees);
-      appareilsData(recettesFiltrees);
-      ustencilesData(recettesFiltrees);
-    }
-  }
-  // function ajouterTags(selecteur, liste) {
-  //   const elements = document.querySelectorAll(selecteur);
-  //   elements.forEach((element, index) => {
-  //     element.addEventListener("click", () => {
-  //       const elementNom = liste[index];
-  //       const boxTags = document.querySelector(".boxTags");
-  //       const tag = document.createElement("div");
-  //       tag.classList.add("tag");
-  //       tag.textContent = elementNom;
-  
-  //       const closeIcon = document.createElement("i");
-  //       closeIcon.classList.add("fa-regular", "fa-circle-xmark", "fermeTag");
-  
-  //       closeIcon.addEventListener("click", () => {
-  //         tag.remove();
-  //         closeIcon.remove();
-  //       });
-  
-  //       if (selecteur === ".choixAppareils") {
-  //         tag.style.backgroundColor = "#68d9a4";
-  //         closeIcon.style.backgroundColor = "#68d9a4";
-  //       } else if (selecteur === ".choixUstenciles") {
-  //         tag.style.backgroundColor = "#ed6454";
-  //         closeIcon.style.backgroundColor = "#ed6454";
-  //       } else {
-  //         tag.style.backgroundColor = "#3282f7";
-  //         closeIcon.style.backgroundColor = "#3282f7";
-  //       }
-  
-  //       boxTags.appendChild(tag);
-  //       boxTags.appendChild(closeIcon);
-  //     });
-  //   });
-  // }
 
-  function rechercheTags(recettes) {
-    const listeTags = document.querySelectorAll(".tag");
-    const dernierTag = listeTags[listeTags.length - 1];
-    const dernierTitre = dernierTag.title.toLowerCase();
-  
-    let recettesFiltrees = recettes;
-  
-    if (dernierTag.classList.contains("tagIngredient")) {
-      recettesFiltrees = recettesFiltrees.filter((recette) =>
-        dernierTitre === '' || recette.ingredients.some(ingredient => ingredient.ingredient.toLowerCase() === dernierTitre)
-      );
-    } else if (dernierTag.classList.contains("tagAppareil")){
-      recettesFiltrees = recettesFiltrees.filter((recette) =>
-        dernierTitre === '' || recette.appliance.toLowerCase().includes(dernierTitre)
-      );
-    } else {
-      recettesFiltrees = recettesFiltrees.filter((recette) =>
-        dernierTitre === '' || recette.ustensils.includes(dernierTitre)
-      );
+    // Ajouter la recette au tableau des recettes filtrées si elle correspond à la recherche
+    if (match) {
+      recettesFiltrees.push(recette);
     }
-  
-    rechercheRecettes(recettesFiltrees);
   }
+
+  // Si aucune recette n'a été trouvée, affiche un message d'erreur dans la boîte des recettes
+  if (recettesFiltrees === 0) {
+    document.querySelector(".boxRecettes").innerHTML = `
+      <div class="messageErreurRecette"> 
+      Aucune recette ne correspond à votre critère… <br> vous pouvez chercher « tarte aux pommes », « poisson », etc. </div>`;
+    document.querySelector(".boxRecettes").style.justifyContent = "center";
+  } else {
+    // Sinon, affiche les recettes filtrées
+    document.querySelector(".boxRecettes").style.justifyContent = "space-between";
+
+    // Crée des tableaux d'ingrédients, d'appareils et d'ustensiles pour les filtres
+    const ingredients = recettesFiltrees.reduce(
+      (resultats, recette) => [...resultats, ...recette.ingredients],
+      [],
+    );
+    const appareils = recettesFiltrees.reduce(
+      (resultats, recette) => [...resultats, recette.appliance],
+      [],
+    );
+    const ustensiles = recettesFiltrees.reduce(
+      (resultats, recette) => [...resultats, ...recette.ustensils],
+      [],
+    );
+
+    // Appelle la fonction "recettesData" pour afficher les recettes filtrées
+    recettesData(recettesFiltrees);
+    // Appelle la fonction "rechercheFiltres" pour afficher les ingrédients, appareils et ustensiles
+    rechercheFiltres("ingredients", ingredients, (ingredient) => createTag(ingredient, "tagIngredient", "#3282f7", recettes, rechercheTags));
+    rechercheFiltres("appareils", appareils, (appareil) => createTag(appareil, "tagAppareil", "#68d9a4", recettes, rechercheTags));
+    rechercheFiltres("ustensiles", ustensiles, (ustensil) => createTag(ustensil, "tagUstensile", "#ed6454", recettes, rechercheTags));
+  }
+}

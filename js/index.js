@@ -1,3 +1,7 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
+/* eslint-disable quotes */
 // recuperation de la data
 async function getRecettes() {
   return fetch("data/recettes.json").then((response) => response.json()); // récupère les données depuis le fichier json
@@ -5,12 +9,14 @@ async function getRecettes() {
 
 async function recettesData(recettes) {
   const recettesSection = document.querySelector(".boxRecettes");
-  recettesSection.innerHTML = ""; // On vide la section des recettes
+  // On vide la section des recettes
+  recettesSection.innerHTML = "";
   recettes.sort((a, b) => a.name.localeCompare(b.name));
-  
+
   const promises = recettes.map((recette) => {
     const userCardDOM = new Recette(recette);
-    return userCardDOM.article; // on retourne l'article créé
+    // on retourne l'article créé
+    return userCardDOM.article;
   });
   Promise.all(promises).then((articles) => {
     // résolution promesses de création de cartes
@@ -22,10 +28,14 @@ async function recettesData(recettes) {
 
 async function ingredientsData(ingredients, onclicked) {
   const ingredientsSection = document.querySelector(".boxIngredients");
-  ingredientsSection.innerHTML = ""; // On vide la section des ingrédients
+  // On vide la section des ingrédients
+  ingredientsSection.innerHTML = "";
 
   // Création d'un seul objet Ingredient avec tous les ingrédients
-  const allIngredients = new ListeIngredients({ id: "all", ingredients }, onclicked);
+  const allIngredients = new ListeIngredients(
+    { id: "all", ingredients },
+    onclicked,
+  );
 
   // Ajout de l'article de l'objet Ingredient au DOM
   ingredientsSection.appendChild(allIngredients.article);
@@ -33,9 +43,12 @@ async function ingredientsData(ingredients, onclicked) {
 
 async function appareilsData(appareils, onclicked) {
   const appareilsSection = document.querySelector(".boxAppareils");
-  appareilsSection.innerHTML = ""; // On vide la section des appareils
+  // On vide la section des appareils
+  appareilsSection.innerHTML = "";
 
-  const promises = [new ListeAppareils({ id: "appliance", appliance: appareils }, onclicked)];
+  const promises = [
+    new ListeAppareils({ id: "appliance", appliance: appareils }, onclicked),
+  ];
   Promise.all(promises).then((articles) => {
     articles.forEach((article) => {
       appareilsSection.appendChild(article.article);
@@ -45,9 +58,12 @@ async function appareilsData(appareils, onclicked) {
 
 async function ustensilesData(ustensils, onclicked) {
   const ustensilesSection = document.querySelector(".boxUstensiles");
-  ustensilesSection.innerHTML = ""; // On vide la section des ustensiles
+  // On vide la section des ustensiles
+  ustensilesSection.innerHTML = "";
 
-  const promises = [new ListeUstensiles({ id: "ustensiles", ustensils }, onclicked)];
+  const promises = [
+    new ListeUstensiles({ id: "ustensiles", ustensils }, onclicked),
+  ];
   Promise.all(promises).then((articles) => {
     // résolution promesses de création d'articles
     articles.forEach((article) => {
@@ -58,33 +74,63 @@ async function ustensilesData(ustensils, onclicked) {
 
 // init
 async function init() {
-  const { recettes } = await getRecettes(); // récupère les datas des photographes
-    // Création d'un tableau avec tous les ingrédients de toutes les recettes
-  const ingredients = recettes.reduce((resultats, recette) => [...resultats, ...recette.ingredients], []);
-  const appareils = recettes.reduce((resultats, recette) => [...resultats, recette.appliance], []);
-  const ustensiles = recettes.reduce((resultats, recette) => [...resultats, ...recette.ustensils], []);
+  // récupère les datas des photographes
+  const { recettes } = await getRecettes();
 
+  // On crée des listes d'ingrédients, d'appareils et d'ustensiles à partir des données des recettes
+  const ingredients = recettes.reduce(
+    (resultats, recette) => [...resultats, ...recette.ingredients],
+    [],
+  );
+  const appareils = recettes.reduce(
+    (resultats, recette) => [...resultats, recette.appliance],
+    [],
+  );
+  const ustensiles = recettes.reduce(
+    (resultats, recette) => [...resultats, ...recette.ustensils],
+    [],
+  );
+
+  // On affiche les recettes non filtrées par défaut
   recettesData(recettes);
-  rechercheIngredients(ingredients, (ingredient) => creaTagsIngredient(ingredient, recettes));
-  rechercheAppareils(appareils, (appareil) => creaTagsAppareil(appareil, recettes));
-  rechercheUstensiles(ustensiles, (ustensile) => creaTagsUstensile(ustensile, recettes));
 
+  // On crée les filtres pour les ingrédients, appareils et ustensiles
+  rechercheFiltres("ingredients", ingredients, (ingredient) => createTag(ingredient, "tagIngredient", "#3282f7", recettes, rechercheTags));
+  rechercheFiltres("appareils", appareils, (appareil) => createTag(appareil, "tagAppareil", "#68d9a4", recettes, rechercheTags));
+  rechercheFiltres("ustensiles", ustensiles, (ustensil) => createTag(ustensil, "tagUstensile", "#ed6454", recettes, rechercheTags));
+
+  // On ajoute des écouteurs d'événements sur les champs de recherche
+  // Recherche principale
   document.querySelector(".rechercheInput").addEventListener("input", () => {
     rechercheInput(recettes);
   });
 
-  document.querySelector(".rechercheIngredients").addEventListener("input", () => {
-    rechercheIngredients(ingredients, (ingredient) => creaTagsIngredient(ingredient, recettes));
-  });
+  // Recherche ingrédients
+  document
+    .querySelector(".rechercheIngredients")
+    .addEventListener("input", () => {
+      rechercheFiltres("ingredients", ingredients, (ingredient) => createTag(
+        ingredient,
+        "tagIngredient",
+        "#3282f7",
+        recettes,
+        rechercheTags,
+      ));
+    });
 
-  document.querySelector(".rechercheAppareils").addEventListener("input", () => {
-    rechercheAppareils(appareils, (appareil) => creaTagsAppareil(appareil, recettes));
-  });
+  // Recherche appareils
+  document
+    .querySelector(".rechercheAppareils")
+    .addEventListener("input", () => {
+      rechercheFiltres("appareils", appareils, (appareil) => createTag(appareil, "tagAppareil", "#68d9a4", recettes, rechercheTags));
+    });
 
-  document.querySelector(".rechercheUstensiles").addEventListener("input", () => {
-    rechercheUstensiles(ustensiles, (ustensile) => creaTagsUstensile(ustensile, recettes));
-  });
-
+  // Recherche ustensiles
+  document
+    .querySelector(".rechercheUstensiles")
+    .addEventListener("input", () => {
+      rechercheFiltres("ustensiles", ustensiles, (ustensil) => createTag(ustensil, "tagUstensile", "#ed6454", recettes, rechercheTags));
+    });
 }
 
 init();

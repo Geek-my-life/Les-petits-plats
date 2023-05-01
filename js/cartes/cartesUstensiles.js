@@ -1,3 +1,6 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable quotes */
+// eslint-disable-next-line no-unused-vars
 class ListeUstensiles {
   constructor(data, onclicked) {
     this.id = data.id;
@@ -10,7 +13,7 @@ class ListeUstensiles {
     // Création d'un élément ul pour la liste d'ustensiles
     const ul = document.createElement("ul");
 
-    // Tri des ustensiles par ordre alphabétique en ignorant la casse et en enlevant les espaces inutiles
+    // Tri des ustensiles par ordre alphabétique en ignorant la casse et en enlevant les espaces
     const sortedUstensils = this.ustensils
       .map((ustensil) => ustensil.toLowerCase().trim())
       .filter((value, index, self) => self.indexOf(value) === index)
@@ -25,7 +28,6 @@ class ListeUstensiles {
 
       // Ajout de l'événement clic pour ajouter un tag
       li.addEventListener("click", () => {
-
         this.onclicked(ustensile);
       });
     });

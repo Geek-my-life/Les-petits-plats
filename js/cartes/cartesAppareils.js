@@ -1,3 +1,6 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable quotes */
+// eslint-disable-next-line no-unused-vars
 class ListeAppareils {
   constructor(data, onclicked) {
     this.id = data.id;
@@ -10,7 +13,7 @@ class ListeAppareils {
     // Création d'un élément ul pour la liste d'ustensiles
     const ul = document.createElement("ul");
 
-    // Tri des appareils par ordre alphabétique en ignorant la casse et en enlevant les espaces inutiles
+    // Tri des appareils par ordre alphabétique en ignorant la casse et en enlevant les espaces
     const sortedAppareils = this.appliance
       .map((appareil) => appareil.toLowerCase().trim())
       .filter((value, index, self) => self.indexOf(value) === index)

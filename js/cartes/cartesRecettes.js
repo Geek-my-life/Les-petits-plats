@@ -1,3 +1,6 @@
+/* eslint-disable linebreak-style */
+/* eslint-disable quotes */
+// eslint-disable-next-line no-unused-vars
 class Recette {
   constructor(data) {
     this.id = data.id;
@@ -10,21 +13,16 @@ class Recette {
     this.ustensils = data.ustensils;
     this.article = this.create();
   }
-  
 
   create() {
     const recettes = document.createElement("article");
     recettes.id = this.id;
 
-    let ingredientsList = "";
-    for (const ingredient of this.ingredients) {
-      const quantity = ingredient.quantity
-        ? `${ingredient.quantity} ${ingredient.unit || ""}`
-        : "";
+    const ingredientsList = this.ingredients.map((ingredient) => {
+      const quantity = ingredient.quantity ? `${ingredient.quantity} ${ingredient.unit || ""}` : "";
       const name = ingredient.ingredient;
-      const ingredientHtml = `<li>${name} : ${quantity}</li>`;
-      ingredientsList += ingredientHtml;
-    }
+      return `<li>${name} : ${quantity}</li>`;
+    }).join("");
 
     recettes.innerHTML = `
         <div class="cartesRecettes">
