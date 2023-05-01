@@ -23,6 +23,7 @@ class ListeIngredients {
     sortedIngredients.forEach((ingredient) => {
       const li = document.createElement("li");
       li.setAttribute("class", "choixIngredients");
+      li.setAttribute("aria-label", ingredient);
       li.textContent = ingredient;
       ul.appendChild(li);
 

@@ -23,6 +23,7 @@ class ListeAppareils {
     sortedAppareils.forEach((appareil) => {
       const li = document.createElement("li");
       li.setAttribute("class", "choixAppareils");
+      li.setAttribute("aria-label", appareil);
       li.textContent = appareil;
       ul.appendChild(li);
 

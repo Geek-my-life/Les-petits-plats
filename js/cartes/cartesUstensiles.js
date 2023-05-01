@@ -23,6 +23,7 @@ class ListeUstensiles {
     sortedUstensils.forEach((ustensile) => {
       const li = document.createElement("li");
       li.setAttribute("class", "choixUstensiles");
+      li.setAttribute("aria-label", ustensile);
       li.textContent = ustensile;
       ul.appendChild(li);
 
