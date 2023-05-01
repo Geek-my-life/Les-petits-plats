@@ -135,12 +135,12 @@ function rechercheFiltres(type, data, onclicked) {
     case "ingredients":
       // Si la zone de recherche est vide ou contient "ingrédients", afficher tous les ingrédients
       // Sinon, filtrer les ingrédients pour n'afficher que ceux qui contiennent la chaîne de caractères recherchée
-      liste = rechercheInputTexte === "ingrédients" ? data : data.filter((item) => item.ingredient.toLowerCase().includes(rechercheInput));
+      liste = rechercheInputTexte === "ingrédients" ? data : data.filter((item) => item.ingredient.toLowerCase().includes(rechercheInputTexte));
       break;
     default:
       // Si la zone de recherche est vide ou contient le type de filtre, afficher tous les éléments
       // Sinon, filtrer les éléments pour n'afficher que ceux qui contiennent la chaîne de caractères recherchée
-      liste = rechercheInputTexte === type ? data : data.filter((item) => item.toLowerCase().includes(rechercheInput));
+      liste = rechercheInputTexte === type ? data : data.filter((item) => item.toLowerCase().includes(rechercheInputTexte));
       break;
   }
 
