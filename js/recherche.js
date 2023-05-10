@@ -5,123 +5,105 @@
 /* eslint-disable no-use-before-define */
 /* eslint-disable quotes */
 /* eslint-disable no-unused-vars */
+
 function rechercheInput(recettes) {
   const rechercheInputTexte = document.querySelector(".rechercheInput").value.trim().toLowerCase();
   if (rechercheInputTexte.length > 2) {
-    rechercheRecettes(recettes);
+    rechercherRecettes(recettes);
   } else {
-    rechercheRecettes(recettes);
+    rechercherRecettes(recettes);
   }
 }
 
-function rechercheRecettes(recettes) {
-  // Récupérer la valeur de l'input de recherche et la formater en minuscules
+function recupererValeurRecherche() {
   const rechercheInputTexte = document.querySelector(".rechercheInput").value.trim().toLowerCase();
+  return rechercheInputTexte;
+}
 
-  // Filtrer les recettes en fonction de la valeur de recherche
-  const recettesFiltrees = recettes.filter((recette) =>
-    // eslint-disable-next-line implicit-arrow-linebreak
-    [recette.name, recette.description].some((texte) => texte.toLowerCase().includes(rechercheInputTexte))
+function filtrerRecettes(recettes, rechercheInputTexte) {
+  const recettesFiltrees = recettes.filter((recette) => [recette.name, recette.description].some((texte) => texte.toLowerCase().includes(rechercheInputTexte))
     || recette.ingredients.some((ingredient) => ingredient.ingredient.toLowerCase().includes(rechercheInputTexte)));
-
-  // Si aucune recette ne correspond à la recherche, afficher un message d'erreur
-  if (recettesFiltrees.length === 0) {
-    document.querySelector(".boxRecettes").innerHTML = `
-      <div class="messageErreurRecette"> 
-        Aucune recette ne correspond à votre critère… <br> vous pouvez chercher « tarte aux pommes », « poisson », etc. 
-      </div>`;
-    document.querySelector(".boxRecettes").style.justifyContent = "center";
-  } else {
-    // Si des recettes correspondent à la recherche, afficher les recettes filtrées
-    document.querySelector(".boxRecettes").style.justifyContent = "space-between";
-
-    // Récupérer les ingrédients, appareils et ustensiles des recettes filtrées
-    const ingredients = recettesFiltrees.reduce((resultats, recette) => [...resultats, ...recette.ingredients], []);
-    const appareils = recettesFiltrees.reduce((resultats, recette) => [...resultats, recette.appliance], []);
-    const ustensiles = recettesFiltrees.reduce((resultats, recette) => [...resultats, ...recette.ustensils], []);
-
-    // Afficher les recettes filtrées et les tags de filtres correspondants
-    recettesData(recettesFiltrees);
-    rechercheFiltres("ingredients", ingredients, (ingredient) => createTag(ingredient, "tagIngredient", "#3282f7", recettes, rechercheTags));
-    rechercheFiltres("appareils", appareils, (appareil) => createTag(appareil, "tagAppareil", "#68d9a4", recettes, rechercheTags));
-    rechercheFiltres("ustensiles", ustensiles, (ustensil) => createTag(ustensil, "tagUstensile", "#ed6454", recettes, rechercheTags));
-  }
+  return recettesFiltrees;
 }
 
-function createTag(tagText, tagClass, tagColor, recettes, rechercheRecettes) {
-  // Sélectionner la boîte de tags
-  const boxTags = document.querySelector(".boxTags");
-  // Vérifier si le tag existe déjà
-  if (boxTags.querySelector(`span.tag[title="${tagText}"]`)) {
-    // Si le tag existe déjà, sortir de la fonction
-    return;
-  }
-  // Créer un élément <span> pour le tag
-  const tag = document.createElement("span");
-  // Ajouter le texte et l'attribut "title" avec le texte en tant que valeur
-  tag.textContent = tagText;
-  tag.setAttribute("title", tagText);
-  // Ajouter les classes CSS "tag" et la classe passée en argument
-  tag.classList.add("tag", tagClass);
-  // Définir la couleur de fond avec la couleur passée en argument
-  tag.style.backgroundColor = tagColor;
-
-  // Créer un élément <i> pour le bouton de fermeture
-  const closeIcon = document.createElement("i");
-  // Ajouter les classes CSS pour afficher l'icône
-  closeIcon.classList.add("fa-regular", "fa-circle-xmark", "fermeTag");
-  // Définir la couleur de fond avec la couleur passée en argument
-  closeIcon.style.backgroundColor = tagColor;
-
-  // Ajouter un écouteur d'événements sur le clic du bouton de fermeture
-  closeIcon.addEventListener("click", () => {
-    // Supprimer l'élément <span> du tag
-    tag.remove();
-    // Supprimer l'élément <i> du bouton de fermeture
-    closeIcon.remove();
-    // Mettre à jour la liste des recettes affichées en appelant la fonction "rechercheRecettes" passée en argument
-    rechercheRecettes(recettes);
-  });
-
-  // Ajouter l'élément <span> et l'élément <i> à la boîte de tags
-  boxTags.appendChild(tag);
-  boxTags.appendChild(closeIcon);
-
-  // Mettre à jour la liste des recettes affichées en appelant la fonction "rechercheRecettes" passée en argument
-  rechercheRecettes(recettes);
-}
-
-function rechercheTags(recettes) {
+function rechercheTags(recettes, rechercheInputTexte) {
   // Sélectionner tous les tags présents
   const listeTags = document.querySelectorAll(".tag");
+  const recettesFiltreesTexte = filtrerRecettes(recettes, rechercheInputTexte);
 
   // Si aucun tag n'est présent, afficher toutes les recettes
   if (listeTags.length === 0) {
-    rechercheRecettes(recettes);
-    return;
+    return recettesFiltreesTexte;
   }
 
-  // Sélectionner le dernier tag ajouté
-  const dernierTag = listeTags[listeTags.length - 1];
-  const dernierTitre = dernierTag.title.toLowerCase();
+  // Créer un tableau pour stocker les titres de tous les tags
+  const titresTags = Array.from(listeTags).map((tag) => tag.title.toLowerCase());
 
-  let recettesFiltrees = recettes;
-
-  // Si le dernier tag est un tag ingrédient, filtrer les recettes qui contiennent cet ingrédient
-  if (dernierTag.classList.contains("tagIngredient")) {
-    recettesFiltrees = recettesFiltrees.filter((recette) =>
-      // eslint-disable-next-line implicit-arrow-linebreak
-      recette.ingredients.some((ingredient) => ingredient.ingredient.toLowerCase() === dernierTitre));
-  } else if (dernierTag.classList.contains("tagAppareil")) {
-    // Sinon, si c'est un tag appareil, filtrer les recettes qui utilisent cet appareil
-    recettesFiltrees = recettesFiltrees.filter((recette) => recette.appliance.toLowerCase().includes(dernierTitre));
-  } else {
-    // Sinon, filtrer les recettes qui utilisent cet ustensile
-    recettesFiltrees = recettesFiltrees.filter((recette) => recette.ustensils.includes(dernierTitre));
-  }
+  // Filtrer les recettes en fonction de tous les tags présents
+  const recettesFiltreesTags = recettesFiltreesTexte.filter((recette) => titresTags.every((titre) => {
+    const recetteTags = [
+      ...(recette.ingredients || []).map((ingredient) => ingredient.ingredient.toLowerCase()),
+      recette.appliance.toLowerCase(), ...(recette.ustensils || []).map((ustensile) => ustensile.toLowerCase())];
+    return recetteTags.includes(titre);
+  }));
 
   // Afficher les recettes filtrées
-  rechercheRecettes(recettesFiltrees);
+  return recettesFiltreesTags;
+}
+
+function afficherRecettes(recettesFiltrees) {
+  const boxRecettes = document.querySelector(".boxRecettes");
+  if (recettesFiltrees.length === 0) {
+    boxRecettes.innerHTML = `
+      <div class="messageErreurRecette"> 
+        Aucune recette ne correspond à votre critère… <br> vous pouvez chercher « tarte aux pommes », « poisson », etc. 
+      </div>`;
+    boxRecettes.style.justifyContent = "center";
+  } else {
+    recettesData(recettesFiltrees);
+    boxRecettes.style.justifyContent = "space-between";
+  }
+}
+
+function recupererTags(recettesFiltrees) {
+  const tagsIngredients = recettesFiltrees.reduce((resultats, recette) => [...resultats, ...recette.ingredients], []);
+  const tagsAppareils = recettesFiltrees.reduce((resultats, recette) => [...resultats, recette.appliance], []);
+  const tagsUstensiles = recettesFiltrees.reduce((resultats, recette) => [...resultats, ...recette.ustensils], []);
+  return { tagsIngredients, tagsAppareils, tagsUstensiles };
+}
+
+function afficherTags(tags, recettesFiltrees) {
+  rechercheFiltres("ingredients", tags.tagsIngredients, (ingredient) => creerTag(ingredient, "tagIngredient", "#3282f7", recettesFiltrees, rechercherRecettes));
+  rechercheFiltres("appareils", tags.tagsAppareils, (appareil) => creerTag(appareil, "tagAppareil", "#68d9a4", recettesFiltrees, rechercherRecettes));
+  rechercheFiltres("ustensiles", tags.tagsUstensiles, (ustensil) => creerTag(ustensil, "tagUstensile", "#ed6454", recettesFiltrees, rechercherRecettes));
+  // Recherche ingrédients
+  document
+    .querySelector(".rechercheIngredients")
+    .addEventListener("input", () => {
+      rechercheFiltres("ingredients", tags.tagsIngredients, (ingredient) => creerTag(ingredient, "tagIngredient", "#3282f7", recettesFiltrees, rechercherRecettes));
+    });
+
+  // Recherche appareils
+  document
+    .querySelector(".rechercheAppareils")
+    .addEventListener("input", () => {
+      rechercheFiltres("appareils", tags.tagsAppareils, (appareil) => creerTag(appareil, "tagAppareil", "#68d9a4", recettesFiltrees, rechercherRecettes));
+    });
+
+  // Recherche ustensiles
+  document
+    .querySelector(".rechercheUstensiles")
+    .addEventListener("input", () => {
+      rechercheFiltres("ustensiles", tags.tagsUstensiles, (ustensil) => creerTag(ustensil, "tagUstensile", "#ed6454", recettesFiltrees, rechercherRecettes));
+    });
+}
+
+function rechercherRecettes(recettes) {
+  const rechercheInputTexte = recupererValeurRecherche();
+  const recettesFiltrees = rechercheTags(recettes, rechercheInputTexte);
+  afficherRecettes(recettesFiltrees);
+  const tags = recupererTags(recettesFiltrees);
+  afficherTags(tags, recettes);
 }
 
 function rechercheFiltres(type, data, onclicked) {
@@ -162,4 +144,86 @@ function rechercheFiltres(type, data, onclicked) {
       // Ne rien faire si le type de filtre est inconnu
       break;
   }
+}
+
+function creerTagElement(tagText, tagClass, tagColor) {
+  const tag = document.createElement("span");
+  tag.textContent = tagText;
+  tag.setAttribute("title", tagText);
+  tag.classList.add("tag", tagClass);
+  tag.style.backgroundColor = tagColor;
+  return tag;
+}
+
+function creerCloseIcon(tagColor) {
+  const closeIcon = document.createElement("i");
+  closeIcon.classList.add("fa-regular", "fa-circle-xmark", "fermeTag");
+  closeIcon.style.backgroundColor = tagColor;
+  return closeIcon;
+}
+
+function ajoutCloseEvent(tag, closeIcon, recettes, rechercheTags) {
+  closeIcon.addEventListener("click", () => {
+    tag.remove();
+    closeIcon.remove();
+    rechercheTags(recettes);
+  });
+}
+
+function creerTag(tagText, tagClass, tagColor, recettes, rechercheTags) {
+  const boxTags = document.querySelector(".boxTags");
+  if (boxTags.querySelector(`span.tag[title="${tagText}"]`)) {
+    return;
+  }
+  const tag = creerTagElement(tagText, tagClass, tagColor);
+  const closeIcon = creerCloseIcon(tagColor);
+  ajoutCloseEvent(tag, closeIcon, recettes, rechercheTags);
+  boxTags.appendChild(tag);
+  boxTags.appendChild(closeIcon);
+  rechercheTags(recettes);
+}
+
+function eventFiltres() {
+  const sectionFiltres = document.querySelectorAll(".sectionFiltres");
+  const sectionFiltresArray = Array.from(sectionFiltres);
+  const titreFiltres = document.querySelectorAll(".tagInput");
+  const originalValues = [];
+  let currentBox = null;
+
+  // Stocker les valeurs d'origine dans un tableau
+  titreFiltres.forEach((input) => {
+    originalValues.push(input.value);
+  });
+
+  sectionFiltres.forEach((element) => {
+    element.addEventListener("click", () => {
+    // Vérifier si une boîte est déjà ouverte
+      if (currentBox !== null) {
+      // Ferme la boîte en réappliquant "tailleMini" et en réinitialisant la valeur de l'entrée
+        currentBox.classList.add("tailleMini");
+        const input = currentBox.querySelector(".tagInput");
+        input.value = originalValues[sectionFiltresArray.indexOf(currentBox)];
+      }
+      // Ouvrir la boîte cliquée en supprimant la classe "tailleMini" et en vidant l'entrée
+      element.classList.remove("tailleMini");
+      const tagInput = element.querySelector(".tagInput");
+      tagInput.value = "";
+      // Définir la variable currentBox sur la boîte actuellement ouverte
+      currentBox = element;
+    });
+  });
+
+  document.addEventListener("click", (event) => {
+  // Vérifier si le clic a été effectué à l'extérieur de la boîte actuellement ouverte
+    if (currentBox !== null && !currentBox.contains(event.target)) {
+    // Ferme la boîte en réappliquant "tailleMini" et en réinitialisant la valeur de l'entrée
+      currentBox.classList.add("tailleMini");
+      const input = currentBox.querySelector(".tagInput");
+      input.value = originalValues[sectionFiltresArray.indexOf(currentBox)];
+      // Définir la variable currentBox sur nulle
+      currentBox = null;
+      const event = new Event('input');
+      input.dispatchEvent(event);
+    }
+  });
 }

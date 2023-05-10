@@ -77,60 +77,13 @@ async function init() {
   // récupère les datas des photographes
   const { recettes } = await getRecettes();
 
-  // On crée des listes d'ingrédients, d'appareils et d'ustensiles à partir des données des recettes
-  const ingredients = recettes.reduce(
-    (resultats, recette) => [...resultats, ...recette.ingredients],
-    [],
-  );
-  const appareils = recettes.reduce(
-    (resultats, recette) => [...resultats, recette.appliance],
-    [],
-  );
-  const ustensiles = recettes.reduce(
-    (resultats, recette) => [...resultats, ...recette.ustensils],
-    [],
-  );
+  rechercherRecettes(recettes);
+  eventFiltres();
 
-  // On affiche les recettes non filtrées par défaut
-  recettesData(recettes);
-
-  // On crée les filtres pour les ingrédients, appareils et ustensiles
-  rechercheFiltres("ingredients", ingredients, (ingredient) => createTag(ingredient, "tagIngredient", "#3282f7", recettes, rechercheTags));
-  rechercheFiltres("appareils", appareils, (appareil) => createTag(appareil, "tagAppareil", "#68d9a4", recettes, rechercheTags));
-  rechercheFiltres("ustensiles", ustensiles, (ustensil) => createTag(ustensil, "tagUstensile", "#ed6454", recettes, rechercheTags));
-
-  // On ajoute des écouteurs d'événements sur les champs de recherche
   // Recherche principale
   document.querySelector(".rechercheInput").addEventListener("input", () => {
     rechercheInput(recettes);
   });
-
-  // Recherche ingrédients
-  document
-    .querySelector(".rechercheIngredients")
-    .addEventListener("input", () => {
-      rechercheFiltres("ingredients", ingredients, (ingredient) => createTag(
-        ingredient,
-        "tagIngredient",
-        "#3282f7",
-        recettes,
-        rechercheTags,
-      ));
-    });
-
-  // Recherche appareils
-  document
-    .querySelector(".rechercheAppareils")
-    .addEventListener("input", () => {
-      rechercheFiltres("appareils", appareils, (appareil) => createTag(appareil, "tagAppareil", "#68d9a4", recettes, rechercheTags));
-    });
-
-  // Recherche ustensiles
-  document
-    .querySelector(".rechercheUstensiles")
-    .addEventListener("input", () => {
-      rechercheFiltres("ustensiles", ustensiles, (ustensil) => createTag(ustensil, "tagUstensile", "#ed6454", recettes, rechercheTags));
-    });
 }
 
 init();
