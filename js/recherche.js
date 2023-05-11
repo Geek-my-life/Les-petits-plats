@@ -26,7 +26,7 @@ function filtrerRecettes(recettes, rechercheInputTexte) {
   return recettesFiltrees;
 }
 
-function rechercheTags(recettes, rechercheInputTexte) {
+function filtrerRecettesTags(recettes, rechercheInputTexte) {
   // Sélectionner tous les tags présents
   const listeTags = document.querySelectorAll(".tag");
   const recettesFiltreesTexte = filtrerRecettes(recettes, rechercheInputTexte);
@@ -100,7 +100,7 @@ function afficherTags(tags, recettesFiltrees) {
 
 function rechercherRecettes(recettes) {
   const rechercheInputTexte = recupererValeurRecherche();
-  const recettesFiltrees = rechercheTags(recettes, rechercheInputTexte);
+  const recettesFiltrees = filtrerRecettesTags(recettes, rechercheInputTexte);
   afficherRecettes(recettesFiltrees);
   const tags = recupererTags(recettesFiltrees);
   afficherTags(tags, recettes);
@@ -162,25 +162,25 @@ function creerCloseIcon(tagColor) {
   return closeIcon;
 }
 
-function ajoutCloseEvent(tag, closeIcon, recettes, rechercheTags) {
+function ajoutCloseEvent(tag, closeIcon, recettes, filtrerRecettesTags) {
   closeIcon.addEventListener("click", () => {
     tag.remove();
     closeIcon.remove();
-    rechercheTags(recettes);
+    filtrerRecettesTags(recettes);
   });
 }
 
-function creerTag(tagText, tagClass, tagColor, recettes, rechercheTags) {
+function creerTag(tagText, tagClass, tagColor, recettes, filtrerRecettesTags) {
   const boxTags = document.querySelector(".boxTags");
   if (boxTags.querySelector(`span.tag[title="${tagText}"]`)) {
     return;
   }
   const tag = creerTagElement(tagText, tagClass, tagColor);
   const closeIcon = creerCloseIcon(tagColor);
-  ajoutCloseEvent(tag, closeIcon, recettes, rechercheTags);
+  ajoutCloseEvent(tag, closeIcon, recettes, filtrerRecettesTags);
   boxTags.appendChild(tag);
   boxTags.appendChild(closeIcon);
-  rechercheTags(recettes);
+  filtrerRecettesTags(recettes);
 }
 
 function eventFiltres() {
@@ -203,6 +203,8 @@ function eventFiltres() {
         currentBox.classList.add("tailleMini");
         const input = currentBox.querySelector(".tagInput");
         input.value = originalValues[sectionFiltresArray.indexOf(currentBox)];
+        const event = new Event('input');
+        input.dispatchEvent(event);
       }
       // Ouvrir la boîte cliquée en supprimant la classe "tailleMini" et en vidant l'entrée
       element.classList.remove("tailleMini");
