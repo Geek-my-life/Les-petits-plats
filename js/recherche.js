@@ -103,32 +103,21 @@ function rechercheFiltres(type, data, onclicked) {
 
   let liste;
 
-  // Filtrer la liste de données en fonction du type de filtre
-  switch (type) {
-    case "ingredients":
-      // Si la zone de recherche est vide ou contient "ingrédients", afficher tous les ingrédients
-      // Sinon, filtrer les ingrédients pour n'afficher que ceux qui contiennent la chaîne de caractères recherchée
-      liste = rechercheInputTexte === "ingrédients" ? data : data.filter((item) => item.ingredient.toLowerCase().includes(rechercheInputTexte));
-      break;
-    default:
-      // Si la zone de recherche est vide ou contient le type de filtre, afficher tous les éléments
-      // Sinon, filtrer les éléments pour n'afficher que ceux qui contiennent la chaîne de caractères recherchée
-      liste = rechercheInputTexte === type ? data : data.filter((item) => item.toLowerCase().includes(rechercheInputTexte));
-      break;
-  }
-
   // Afficher les résultats filtrés en fonction du type de filtre
   switch (type) {
     case "ingredients":
       // Afficher la liste des ingrédients filtrés
+      liste = rechercheInputTexte === "ingrédients" ? data : data.filter((item) => item.ingredient.toLowerCase().includes(rechercheInputTexte));
       ingredientsData(liste, onclicked);
       break;
     case "appareils":
       // Afficher la liste des appareils filtrés
+      liste = rechercheInputTexte === type ? data : data.filter((item) => item.toLowerCase().includes(rechercheInputTexte));
       appareilsData(liste, onclicked);
       break;
     case "ustensiles":
       // Afficher la liste des ustensiles filtrés
+      liste = rechercheInputTexte === type ? data : data.filter((item) => item.toLowerCase().includes(rechercheInputTexte));
       ustensilesData(liste, onclicked);
       break;
     default:
