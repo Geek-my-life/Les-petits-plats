@@ -139,35 +139,63 @@ body {
   height: 60px;
   background-color: transparent;
   border-style: none;
+  outline: none;
   width: 90%;
   color: white;
 }
 
-.boxIngredients ul {
-  column-count: 3;
+.rechercheFiltre .tagInput::placeholder {
+  color: rgba(255, 255, 255, 0.692);
+}
+.boxIngredients {
   line-height: 22px;
-  height: 300px;
-  overflow: scroll;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  max-height: 300px;
+  overflow-y: scroll;
+  color: white;
+  font-size: 18px;
+}
+
+.boxIngredients ul {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+.boxAppareils {
+  line-height: 22px;
+  max-height: 300px;
+  overflow-y: scroll;
   color: white;
   font-size: 18px;
 }
 
 .boxAppareils ul {
-  column-count: 3;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+}
+
+.boxUstensiles {
   line-height: 22px;
-  height: 300px;
+  max-height: 300px;
+  overflow-y: scroll;
   color: white;
   font-size: 18px;
 }
 
 .boxUstensiles ul {
-  column-count: 3;
-  line-height: 22px;
-  height: 300px;
-  color: white;
-  font-size: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
 }
 
 .fa-chevron-down {
