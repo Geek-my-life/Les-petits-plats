@@ -82,7 +82,7 @@ async function init() {
 
   // Recherche principale
   document.querySelector(".rechercheInput").addEventListener("input", () => {
-    rechercheInput(recettes);
+    rechercherRecettes(recettes);
   });
 }
 

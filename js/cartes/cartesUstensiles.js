@@ -28,7 +28,8 @@ class ListeUstensiles {
       ul.appendChild(li);
 
       // Ajout de l'événement clic pour ajouter un tag
-      li.addEventListener("click", () => {
+      li.addEventListener("click", (e) => {
+        e.stopPropagation();
         this.onclicked(ustensile);
       });
     });

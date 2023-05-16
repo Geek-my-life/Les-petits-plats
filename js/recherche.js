@@ -6,15 +6,6 @@
 /* eslint-disable quotes */
 /* eslint-disable no-unused-vars */
 
-function rechercheInput(recettes) {
-  const rechercheInputTexte = document.querySelector(".rechercheInput").value.trim().toLowerCase();
-  if (rechercheInputTexte.length > 2) {
-    rechercherRecettes(recettes);
-  } else {
-    rechercherRecettes(recettes);
-  }
-}
-
 function recupererValeurRecherche() {
   const rechercheInputTexte = document.querySelector(".rechercheInput").value.trim().toLowerCase();
   return rechercheInputTexte;
@@ -100,10 +91,10 @@ function afficherTags(tags, recettesFiltrees) {
 
 function rechercherRecettes(recettes) {
   const rechercheInputTexte = recupererValeurRecherche();
-  const recettesFiltrees = filtrerRecettesTags(recettes, rechercheInputTexte);
+  const recettesFiltrees = filtrerRecettesTags(recettes, rechercheInputTexte.length > 2 ? rechercheInputTexte : "");
   afficherRecettes(recettesFiltrees);
   const tags = recupererTags(recettesFiltrees);
-  afficherTags(tags, recettes);
+  afficherTags(tags, recettesFiltrees);
 }
 
 function rechercheFiltres(type, data, onclicked) {
@@ -198,13 +189,16 @@ function eventFiltres() {
   sectionFiltres.forEach((element) => {
     element.addEventListener("click", () => {
     // Vérifier si une boîte est déjà ouverte
-      if (currentBox !== null) {
+      if (currentBox !== null && currentBox !== element) {
       // Ferme la boîte en réappliquant "tailleMini" et en réinitialisant la valeur de l'entrée
         currentBox.classList.add("tailleMini");
         const input = currentBox.querySelector(".tagInput");
+        const oldValue = input.value;
         input.value = originalValues[sectionFiltresArray.indexOf(currentBox)];
-        const event = new Event('input');
-        input.dispatchEvent(event);
+        if (oldValue !== "") {
+          const event = new Event('input');
+          input.dispatchEvent(event);
+        }
       }
       // Ouvrir la boîte cliquée en supprimant la classe "tailleMini" et en vidant l'entrée
       element.classList.remove("tailleMini");
@@ -221,11 +215,14 @@ function eventFiltres() {
     // Ferme la boîte en réappliquant "tailleMini" et en réinitialisant la valeur de l'entrée
       currentBox.classList.add("tailleMini");
       const input = currentBox.querySelector(".tagInput");
+      const oldValue = input.value;
       input.value = originalValues[sectionFiltresArray.indexOf(currentBox)];
+      if (oldValue !== "") {
+        const event = new Event('input');
+        input.dispatchEvent(event);
+      }
       // Définir la variable currentBox sur nulle
       currentBox = null;
-      const event = new Event('input');
-      input.dispatchEvent(event);
     }
   });
 }
