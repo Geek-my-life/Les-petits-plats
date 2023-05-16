@@ -63,30 +63,45 @@ function recupererTags(recettesFiltrees) {
   return { tagsIngredients, tagsAppareils, tagsUstensiles };
 }
 
+let appareilEvent;
+let ingredientEvent;
+let ustensileEvent;
+
 function afficherTags(tags, recettesFiltrees) {
   rechercheFiltres("ingredients", tags.tagsIngredients, (ingredient) => creerTag(ingredient, "tagIngredient", "#3282f7", recettesFiltrees, rechercherRecettes));
   rechercheFiltres("appareils", tags.tagsAppareils, (appareil) => creerTag(appareil, "tagAppareil", "#68d9a4", recettesFiltrees, rechercherRecettes));
   rechercheFiltres("ustensiles", tags.tagsUstensiles, (ustensil) => creerTag(ustensil, "tagUstensile", "#ed6454", recettesFiltrees, rechercherRecettes));
-  // Recherche ingrédients
+
+  if (ingredientEvent) {
+    document.querySelector(".rechercheIngredients").removeEventListener("input", ingredientEvent);
+  } if (appareilEvent) {
+    document.querySelector(".rechercheAppareils").removeEventListener("input", appareilEvent);
+  } if (ustensileEvent) {
+    document.querySelector(".rechercheUstensiles").removeEventListener("input", ustensileEvent);
+  }
+  ingredientEvent = () => {
+    rechercheFiltres("ingredients", tags.tagsIngredients, (ingredient) => creerTag(ingredient, "tagIngredient", "#3282f7", recettesFiltrees, rechercherRecettes));
+  };
+  appareilEvent = () => {
+    rechercheFiltres("appareils", tags.tagsAppareils, (appareil) => creerTag(appareil, "tagAppareil", "#68d9a4", recettesFiltrees, rechercherRecettes));
+  };
+  ustensileEvent = () => {
+    rechercheFiltres("ustensiles", tags.tagsUstensiles, (ustensil) => creerTag(ustensil, "tagUstensile", "#ed6454", recettesFiltrees, rechercherRecettes));
+  };
+
   document
     .querySelector(".rechercheIngredients")
-    .addEventListener("input", () => {
-      rechercheFiltres("ingredients", tags.tagsIngredients, (ingredient) => creerTag(ingredient, "tagIngredient", "#3282f7", recettesFiltrees, rechercherRecettes));
-    });
+    .addEventListener("input", ingredientEvent);
 
   // Recherche appareils
   document
     .querySelector(".rechercheAppareils")
-    .addEventListener("input", () => {
-      rechercheFiltres("appareils", tags.tagsAppareils, (appareil) => creerTag(appareil, "tagAppareil", "#68d9a4", recettesFiltrees, rechercherRecettes));
-    });
+    .addEventListener("input", appareilEvent);
 
   // Recherche ustensiles
   document
     .querySelector(".rechercheUstensiles")
-    .addEventListener("input", () => {
-      rechercheFiltres("ustensiles", tags.tagsUstensiles, (ustensil) => creerTag(ustensil, "tagUstensile", "#ed6454", recettesFiltrees, rechercherRecettes));
-    });
+    .addEventListener("input", ustensileEvent);
 }
 
 function rechercherRecettes(recettes) {
@@ -94,7 +109,7 @@ function rechercherRecettes(recettes) {
   const recettesFiltrees = filtrerRecettesTags(recettes, rechercheInputTexte.length > 2 ? rechercheInputTexte : "");
   afficherRecettes(recettesFiltrees);
   const tags = recupererTags(recettesFiltrees);
-  afficherTags(tags, recettesFiltrees);
+  afficherTags(tags, recettes);
 }
 
 function rechercheFiltres(type, data, onclicked) {
