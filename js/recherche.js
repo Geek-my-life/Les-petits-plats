@@ -6,15 +6,6 @@
 /* eslint-disable quotes */
 /* eslint-disable no-unused-vars */
 
-function rechercheInput(recettes) {
-  const rechercheInputTexte = document.querySelector(".rechercheInput").value.trim().toLowerCase();
-  if (rechercheInputTexte.length > 2) {
-    rechercherRecettes(recettes);
-  } else {
-    rechercherRecettes(recettes);
-  }
-}
-
 function recupererValeurRecherche() {
   const rechercheInputTexte = document.querySelector(".rechercheInput").value.trim().toLowerCase();
   return rechercheInputTexte;
@@ -101,35 +92,50 @@ function recupererTags(recettesFiltrees) {
   return { tagsIngredients, tagsAppareils, tagsUstensiles };
 }
 
+let appareilEvent;
+let ingredientEvent;
+let ustensileEvent;
+
 function afficherTags(tags, recettesFiltrees) {
   rechercheFiltres("ingredients", tags.tagsIngredients, (ingredient) => creerTag(ingredient, "tagIngredient", "#3282f7", recettesFiltrees, rechercherRecettes));
   rechercheFiltres("appareils", tags.tagsAppareils, (appareil) => creerTag(appareil, "tagAppareil", "#68d9a4", recettesFiltrees, rechercherRecettes));
   rechercheFiltres("ustensiles", tags.tagsUstensiles, (ustensil) => creerTag(ustensil, "tagUstensile", "#ed6454", recettesFiltrees, rechercherRecettes));
-  // Recherche ingrédients
+
+  if (ingredientEvent) {
+    document.querySelector(".rechercheIngredients").removeEventListener("input", ingredientEvent);
+  } if (appareilEvent) {
+    document.querySelector(".rechercheAppareils").removeEventListener("input", appareilEvent);
+  } if (ustensileEvent) {
+    document.querySelector(".rechercheUstensiles").removeEventListener("input", ustensileEvent);
+  }
+  ingredientEvent = () => {
+    rechercheFiltres("ingredients", tags.tagsIngredients, (ingredient) => creerTag(ingredient, "tagIngredient", "#3282f7", recettesFiltrees, rechercherRecettes));
+  };
+  appareilEvent = () => {
+    rechercheFiltres("appareils", tags.tagsAppareils, (appareil) => creerTag(appareil, "tagAppareil", "#68d9a4", recettesFiltrees, rechercherRecettes));
+  };
+  ustensileEvent = () => {
+    rechercheFiltres("ustensiles", tags.tagsUstensiles, (ustensil) => creerTag(ustensil, "tagUstensile", "#ed6454", recettesFiltrees, rechercherRecettes));
+  };
+
   document
     .querySelector(".rechercheIngredients")
-    .addEventListener("input", () => {
-      rechercheFiltres("ingredients", tags.tagsIngredients, (ingredient) => creerTag(ingredient, "tagIngredient", "#3282f7", recettesFiltrees, rechercherRecettes));
-    });
+    .addEventListener("input", ingredientEvent);
 
   // Recherche appareils
   document
     .querySelector(".rechercheAppareils")
-    .addEventListener("input", () => {
-      rechercheFiltres("appareils", tags.tagsAppareils, (appareil) => creerTag(appareil, "tagAppareil", "#68d9a4", recettesFiltrees, rechercherRecettes));
-    });
+    .addEventListener("input", appareilEvent);
 
   // Recherche ustensiles
   document
     .querySelector(".rechercheUstensiles")
-    .addEventListener("input", () => {
-      rechercheFiltres("ustensiles", tags.tagsUstensiles, (ustensil) => creerTag(ustensil, "tagUstensile", "#ed6454", recettesFiltrees, rechercherRecettes));
-    });
+    .addEventListener("input", ustensileEvent);
 }
 
 function rechercherRecettes(recettes) {
   const rechercheInputTexte = recupererValeurRecherche();
-  const recettesFiltrees = filtrerRecettesTags(recettes, rechercheInputTexte);
+  const recettesFiltrees = filtrerRecettesTags(recettes, rechercheInputTexte.length > 2 ? rechercheInputTexte : "");
   afficherRecettes(recettesFiltrees);
   const tags = recupererTags(recettesFiltrees);
   afficherTags(tags, recettes);
@@ -141,32 +147,21 @@ function rechercheFiltres(type, data, onclicked) {
 
   let liste;
 
-  // Filtrer la liste de données en fonction du type de filtre
-  switch (type) {
-    case "ingredients":
-      // Si la zone de recherche est vide ou contient "ingrédients", afficher tous les ingrédients
-      // Sinon, filtrer les ingrédients pour n'afficher que ceux qui contiennent la chaîne de caractères recherchée
-      liste = rechercheInputTexte === "ingrédients" ? data : data.filter((item) => item.ingredient.toLowerCase().includes(rechercheInputTexte));
-      break;
-    default:
-      // Si la zone de recherche est vide ou contient le type de filtre, afficher tous les éléments
-      // Sinon, filtrer les éléments pour n'afficher que ceux qui contiennent la chaîne de caractères recherchée
-      liste = rechercheInputTexte === type ? data : data.filter((item) => item.toLowerCase().includes(rechercheInputTexte));
-      break;
-  }
-
   // Afficher les résultats filtrés en fonction du type de filtre
   switch (type) {
     case "ingredients":
       // Afficher la liste des ingrédients filtrés
+      liste = rechercheInputTexte === "ingrédients" ? data : data.filter((item) => item.ingredient.toLowerCase().includes(rechercheInputTexte));
       ingredientsData(liste, onclicked);
       break;
     case "appareils":
       // Afficher la liste des appareils filtrés
+      liste = rechercheInputTexte === type ? data : data.filter((item) => item.toLowerCase().includes(rechercheInputTexte));
       appareilsData(liste, onclicked);
       break;
     case "ustensiles":
       // Afficher la liste des ustensiles filtrés
+      liste = rechercheInputTexte === type ? data : data.filter((item) => item.toLowerCase().includes(rechercheInputTexte));
       ustensilesData(liste, onclicked);
       break;
     default:
@@ -227,13 +222,16 @@ function eventFiltres() {
   sectionFiltres.forEach((element) => {
     element.addEventListener("click", () => {
     // Vérifier si une boîte est déjà ouverte
-      if (currentBox !== null) {
+      if (currentBox !== null && currentBox !== element) {
       // Ferme la boîte en réappliquant "tailleMini" et en réinitialisant la valeur de l'entrée
         currentBox.classList.add("tailleMini");
         const input = currentBox.querySelector(".tagInput");
+        const oldValue = input.value;
         input.value = originalValues[sectionFiltresArray.indexOf(currentBox)];
-        const event = new Event('input');
-        input.dispatchEvent(event);
+        if (oldValue !== "") {
+          const event = new Event('input');
+          input.dispatchEvent(event);
+        }
       }
       // Ouvrir la boîte cliquée en supprimant la classe "tailleMini" et en vidant l'entrée
       element.classList.remove("tailleMini");
@@ -250,11 +248,14 @@ function eventFiltres() {
     // Ferme la boîte en réappliquant "tailleMini" et en réinitialisant la valeur de l'entrée
       currentBox.classList.add("tailleMini");
       const input = currentBox.querySelector(".tagInput");
+      const oldValue = input.value;
       input.value = originalValues[sectionFiltresArray.indexOf(currentBox)];
+      if (oldValue !== "") {
+        const event = new Event('input');
+        input.dispatchEvent(event);
+      }
       // Définir la variable currentBox sur nulle
       currentBox = null;
-      const event = new Event('input');
-      input.dispatchEvent(event);
     }
   });
 }
